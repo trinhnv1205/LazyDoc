@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Syncfusion.DocIO.DLS;
+using Syncfusion.XlsIO;
 
 namespace LazyDoc
 {
@@ -65,5 +67,73 @@ namespace LazyDoc
                 document.Replace(item.Key.ToString(), item.Value.ToString(), true, true);
             }
         }
+
+        // get stream from file path
+        public Stream GetStreamFromFile(string filePath)
+        {
+            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return stream;
+        }
+
+        // create a new file from document stream
+        public void CreateFileFromStream(Stream stream, string filePath)
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                stream.CopyTo(fileStream);
+            }
+        }
+
+        public IWorksheets GetWorksheetsFromFile(string inputFileName, ExcelEngine excelEngine)
+        {
+            //Initialize application
+            IApplication app = excelEngine.Excel;
+            //Set default application version as Excel 2016
+            app.DefaultVersion = ExcelVersion.Excel2016;
+            //Open existing Excel workbook from the specified location
+            Stream excelStream = GetStreamFromFile(inputFileName);
+            IWorkbook workbook = app.Workbooks.Open(excelStream, ExcelOpenType.Automatic);
+
+            //Access the first worksheet
+            IWorksheets worksheets = workbook.Worksheets;
+            return worksheets;
+        }
+
+        // get all title for worksheets
+        public List<string> GetAllWorksheetsTitle(IWorksheets worksheets)
+        {
+            var worksheetTitles = new List<string>();
+            for (int i = 0; i < worksheets.Count; i++)
+            {
+                worksheetTitles.Add(worksheets[i].Name);
+            }
+
+            return worksheetTitles;
+        }
+
+        // get worksheet by name 
+        public IWorksheet GetWorksheetByName(IWorksheets worksheets, string worksheetName)
+        {
+            List<string> worksheetTitles = GetAllWorksheetsTitle(worksheets);
+            // check name is exist in list
+            if (worksheetTitles.Any(x => x.Trim().ToLower() == worksheetName.Trim().ToLower()))
+            {
+                return worksheets[worksheetName];
+            }
+            else
+            {
+                return worksheets[0];
+            }
+        }
+
+        // get range from worksheet
+        public IRange GetRangeFromWorksheet(IWorksheet worksheet)
+        {
+            //Access the used range of the Excel file
+            IRange usedRange = worksheet.UsedRange;
+            return usedRange;
+        }
+        
+        
     }
 }
