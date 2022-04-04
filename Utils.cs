@@ -77,7 +77,8 @@ namespace LazyDoc
         }
 
         // create a new file from document stream
-        public void CreateFileFromStream(Dictionary<string,string> data, string templateWordPath,string outputWordPath)
+        public void CreateFileFromStream(Dictionary<string, string> data, string templateWordPath,
+            string outputWordPath)
         {
             // Creates new Word document instance for word processing.
             using WordDocument subDocument = new WordDocument();
@@ -95,7 +96,6 @@ namespace LazyDoc
             docStream.Dispose();
             // close the stream
             subDocument.Dispose();
-
         }
 
         public IWorksheets GetWorksheetsFromFile(string inputFileName, ExcelEngine excelEngine)
@@ -146,6 +146,12 @@ namespace LazyDoc
             //Access the used range of the Excel file
             IRange usedRange = worksheet.UsedRange;
             return usedRange;
+        }
+
+        // check key is exist in dictionary
+        public bool CheckKeyExist(Dictionary<string, string> data, string key)
+        {
+            return data.ContainsKey(key);
         }
     }
 }

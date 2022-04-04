@@ -49,8 +49,16 @@ void ReadExcelData(string inputFileName)
     int lastRow = usedRange.LastRow;
     for (int i = 1; i <= lastRow; i++)
     {
-        string key = sheet[i, 1].Value;
-        string value = sheet[i, 2].Value;
-        data.Add(key, value);
+        string key = sheet[i, 1].Value.Trim();
+        string value = sheet[i, 2].Value.Trim();
+        if (utils.CheckKeyExist(data, key))
+        {
+            // update value
+            data[key] = value;
+        }
+        else{
+            // add new key and value
+            data.Add(key, value);
+        }
     }
 }
