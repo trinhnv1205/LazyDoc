@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using LazyDoc;
-using Syncfusion.DocIO;
-using Syncfusion.DocIO.DLS;
-using Syncfusion.Drawing;
 using Syncfusion.XlsIO;
 
 // constant values
@@ -41,6 +36,7 @@ void CreateDocument(string inputPath, string outputPath)
     //Saves the resultant file in the given path.
 }
 
+// read excel data
 void ReadExcelData(string inputFileName)
 {
     //Instantiate the spreadsheet creation engine
@@ -49,9 +45,8 @@ void ReadExcelData(string inputFileName)
     IWorksheet sheet = utils.GetWorksheetByName(sheets, "Sheet1");
     IRange usedRange = utils.GetRangeFromWorksheet(sheet);
 
+    //Read the data from the spreadsheet
     int lastRow = usedRange.LastRow;
-    int lastColumn = usedRange.LastColumn;
-
     for (int i = 1; i <= lastRow; i++)
     {
         string key = sheet[i, 1].Value;
