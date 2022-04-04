@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
 using Syncfusion.XlsIO;
 
@@ -64,7 +65,7 @@ namespace LazyDoc
         {
             foreach (var item in data)
             {
-                document.Replace(item.Key.ToString(), item.Value.ToString(), true, true);
+                document.Replace(item.Key, item.Value, true, true);
             }
         }
 
@@ -76,12 +77,25 @@ namespace LazyDoc
         }
 
         // create a new file from document stream
-        public void CreateFileFromStream(Stream stream, string filePath)
+        public void CreateFileFromStream(Dictionary<string,string> data, string templateWordPath,string outputWordPath)
         {
-            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-            {
-                stream.CopyTo(fileStream);
-            }
+            // Creates new Word document instance for word processing.
+            using WordDocument subDocument = new WordDocument();
+            //Saves the Word document.
+            Stream docStream = File.OpenRead(Path.GetFullPath(templateWordPath));
+            // open the template document
+            subDocument.Open(docStream, FormatType.Doc);
+            //Saves the resultant file in the given path.
+            docStream = File.Create(Path.GetFullPath(outputWordPath));
+            // Finds all occurrences of a misspelled word and replaces with properly spelled word.
+            ReplaceTextDoc(subDocument, data);
+            // save the document
+            subDocument.Save(docStream, FormatType.Docx);
+            // close the document
+            docStream.Dispose();
+            // close the stream
+            subDocument.Dispose();
+
         }
 
         public IWorksheets GetWorksheetsFromFile(string inputFileName, ExcelEngine excelEngine)
@@ -133,7 +147,5 @@ namespace LazyDoc
             IRange usedRange = worksheet.UsedRange;
             return usedRange;
         }
-        
-        
     }
 }
