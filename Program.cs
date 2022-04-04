@@ -47,10 +47,14 @@ void ReadExcelData(string inputFileName)
 
     //Read the data from the spreadsheet
     int lastRow = usedRange.LastRow;
+    // for each row to get data from excel file and add to dictionary
     for (int i = 1; i <= lastRow; i++)
     {
         string key = sheet[i, 1].Value.Trim();
         string value = sheet[i, 2].Value.Trim();
+        // check if key is empty or value is empty -> skip
+        if(string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value)) continue;
+        // check if key is existed in dictionary
         if (utils.CheckKeyExist(data, key))
         {
             // update value
